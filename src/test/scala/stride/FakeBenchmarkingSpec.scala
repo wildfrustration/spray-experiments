@@ -1,6 +1,6 @@
 package stride
 
-import stride.FakeBenchmarking
+import WebInterface.FakeBenchmarking
 import org.specs2.mutable.Specification
 import spray.testkit.Specs2RouteTest
 import spray.http._
