@@ -25,7 +25,7 @@ class ChallengePersistentActor extends PersistentActor {
 
   val receiveCommand: Receive = {
 
-    case r @ FakeLatency(seconds) => {
+    case r @ FakeLatency(ms) => {
       println("message received in writer: " + r)
       persist(r)( _ => Unit)
     }
@@ -35,7 +35,7 @@ class ChallengePersistentActor extends PersistentActor {
   }
 
   val receiveRecover: Receive = {
-    case _ => Unit//ignored there is no state
+    case _ => Unit //ignored there is no state
   }
 
 }
