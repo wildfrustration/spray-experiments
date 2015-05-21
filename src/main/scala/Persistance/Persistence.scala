@@ -25,17 +25,31 @@ class ChallengePersistentActor extends PersistentActor {
   val receiveCommand: Receive = {
 
     case r @ FakeLatency(seconds) => {
-      persist(r){ event =>
-        context.system.eventStream.publish(event)
-      }
+      println("message received in writer: " + r)
+      persist(r)( _ => Unit)
     }
 
-    
+    case _ => Unit
 
   }
 
   val receiveRecover: Receive = {
-    case _ => //ignored there is no state
+    case _ => Unit//ignored there is no state
   }
 
 }
+
+class ChallengeViewActor extends PersistentView {
+
+  val persistenceId = "log-writer"
+
+  val viewId = "log-view"
+
+  def receive = {
+    case r @ FakeLatency(seconds) => {
+      println("VIEW MESSAGE RECEIVED: " + r)
+    }
+  }
+
+}
+

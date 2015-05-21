@@ -1,8 +1,31 @@
 package WebInterface
 
+import akka.actor._
+
 object Logger {
 
-  //this is not cluster safe
-  def inMemory(latency: Long): Unit = { /* think about it later */ println("waking from: " + latency / 1000) }
+  implicit val system = ActorSystem("Logging-System")
+  val logging = system.actorOf(Props[LoggingActor], name = "Logging-Actor")  // the local actor
 
+  //this is not cluster safe
+  def inMemory(latency: Long): Unit = { logging ! FakeLatency(latency.toInt / 1000); Unit}
+
+}
+
+class LoggingActor extends Actor {
+
+  // create the remote actor
+  val persistence = context.actorSelection("akka.tcp://persistence-system@127.0.0.1:2552/persistence-actor")
+  var counter = 0
+
+  def receive = {
+
+    case r @ FakeLatency(seconds) => {
+      println("sending to persistence")
+      persistence ! r
+    }
+
+    case _ => Unit
+
+  }
 }
