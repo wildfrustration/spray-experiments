@@ -9,7 +9,7 @@ import scala.concurrent.duration._
 
 object Persistence extends App {
 
-  implicit val timeout = Timeout(1.second)
+  implicit val timeout = Timeout(5.seconds)
 
   implicit val persistenceSystem = ActorSystem("persistence-system")
 

@@ -1,10 +1,15 @@
 package WebInterface
 
 import akka.actor._
+import akka.util.Timeout
+import scala.concurrent.duration._
 
 object Logger {
 
+  implicit val timeout = Timeout(1.second)
+
   implicit val system = ActorSystem("Logging-System")
+
   val logging = system.actorOf(Props[LoggingActor], name = "Logging-Actor")  // the local actor
 
   //this is not cluster safe
@@ -19,7 +24,7 @@ class LoggingActor extends Actor {
   def receive = {
 
     case r @ FakeLatency(seconds) => {
-      println("sending to persistence")
+      println("sending to persistence: " + r)
       persistence ! r
     }
 
