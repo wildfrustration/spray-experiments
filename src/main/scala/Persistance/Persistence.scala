@@ -58,7 +58,8 @@ class ChallengeViewActor extends PersistentView {
     }
 
     case "stats" => {
-      context.sender ! allTimesStats
+      println("asking for stats")
+      sender ! allTimesStats
     }
 
     case _ => Unit
