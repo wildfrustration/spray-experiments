@@ -7,6 +7,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.pattern.ask
+import com.typesafe.config._
 
 object Logger {
 
@@ -23,11 +24,15 @@ object Logger {
 
 class LoggingActor extends Actor {
 
+  val conf = ConfigFactory.load()
+
+  val persistenceIp = conf.getString("persistence.ip")
+
   implicit val timeout = Timeout(1.second)
 
-  val persistence = context.actorSelection("akka.tcp://persistence-system@192.168.1.103:2552/user/persistence-actor")
+  val persistence = context.actorSelection(s"akka.tcp://persistence-system@$persistenceIp:2552/user/persistence-actor")
 
-  val view = context.actorSelection("akka.tcp://persistence-system@192.168.1.103:2552/user/view-actor")
+  val view = context.actorSelection(s"akka.tcp://persistence-system@$persistenceIp:2552/user/view-actor")
 
   def receive = {
 

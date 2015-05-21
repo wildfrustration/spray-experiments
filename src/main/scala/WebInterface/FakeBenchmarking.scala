@@ -16,6 +16,7 @@ case class FakeLatency(ms: Long)
 
 object JsonImplicits extends DefaultJsonProtocol {
   implicit val FakeLatencyFormat = jsonFormat1(FakeLatency)
+  implicit val AllTimeStatsFormat = jsonFormat2(AllTimeStats)
 }
 
 
@@ -64,15 +65,12 @@ trait FakeBenchmarking extends HttpService {
     } ~
     path("") {
       get {
-        complete {
-          akka.pattern.ask(Logger.logging, "stats").map {
-            case AllTimeStats(n, latency) => {
-              println("blah")
-              s"hits: $n, average in milliseconds: $latency"
-            }
-            case _ => {
-              println("interestingggggg")
-              ""
+        respondWithMediaType(MediaTypes.`application/json`){
+          complete {
+            akka.pattern.ask(Logger.logging, "stats").map {
+              case s @ AllTimeStats(n, latency) => {
+                s
+              }
             }
           }
         }
