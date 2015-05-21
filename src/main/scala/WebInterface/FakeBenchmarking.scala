@@ -11,7 +11,7 @@ import spray.json.DefaultJsonProtocol
 import spray.httpx.SprayJsonSupport.sprayJsonMarshaller
 import spray.httpx.SprayJsonSupport.sprayJsonUnmarshaller
 
-case class FakeLatency(seconds: Long)
+case class FakeLatency(ms: Long)
 
 object JsonImplicits extends DefaultJsonProtocol {
   implicit val FakeLatencyFormat = jsonFormat1(FakeLatency)
@@ -51,8 +51,8 @@ trait FakeBenchmarking extends HttpService {
           entity(as[FakeLatency]) { latency =>
             respondWithMediaType(MediaTypes.`application/json`){
               complete {
-                println("sleep for: " + latency.seconds)
-                FakeLongOperations.inTheFuture(latency.seconds).map { result =>
+                println("sleep for: " + latency.ms)
+                FakeLongOperations.inTheFuture(latency.ms).map { result =>
                   latency
                 }
               }
@@ -66,7 +66,7 @@ trait FakeBenchmarking extends HttpService {
         complete {
           akka.pattern.ask(Logger.logging, "stats").map {
             case (n, latency) => {
-              s"hits: $n, average: $latency"
+              s"hits: $n, average in milliseconds: $latency"
             }
             case _ => {
               ""

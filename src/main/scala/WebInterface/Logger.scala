@@ -8,7 +8,7 @@ object Logger {
   val logging = system.actorOf(Props[LoggingActor], name = "Logging-Actor")  // the local actor
 
   //this is not cluster safe
-  def inMemory(latency: Long): Unit = { logging ! FakeLatency(latency / 1000); Unit}
+  def inMemory(ms: Long): Unit = { logging ! FakeLatency(ms); Unit}
 
 }
 
@@ -18,7 +18,7 @@ class LoggingActor extends Actor {
 
   def receive = {
 
-    case r @ FakeLatency(seconds) => {
+    case r @ FakeLatency(ms) => {
       println("sending to persistence")
       persistence ! r
     }
