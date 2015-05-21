@@ -1,5 +1,6 @@
 package WebInterface
 
+import Persistence.AllTimeStats
 import akka.actor.Actor
 import akka.util.Timeout
 import spray.routing._
@@ -65,10 +66,12 @@ trait FakeBenchmarking extends HttpService {
       get {
         complete {
           akka.pattern.ask(Logger.logging, "stats").map {
-            case (n, latency) => {
+            case AllTimeStats(n, latency) => {
+              println("blah")
               s"hits: $n, average in milliseconds: $latency"
             }
             case _ => {
+              println("interestingggggg")
               ""
             }
           }
