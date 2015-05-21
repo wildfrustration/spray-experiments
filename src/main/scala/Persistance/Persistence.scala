@@ -15,6 +15,7 @@ object Persistence extends App {
 
   val persistence = persistenceSystem.actorOf(Props[ChallengePersistentActor], "persistence-actor")
 
+  val viewer = persistenceSystem.actorOf(Props[ChallengeViewActor], "view-actor")
 }
 
 // Members declared in akka.persistence.Recovery
@@ -29,7 +30,7 @@ class ChallengePersistentActor extends PersistentActor {
       persist(r)( _ => Unit)
     }
 
-    case _ => Unit
+    case _ => { println("dafuk"); Unit }
 
   }
 
@@ -39,15 +40,25 @@ class ChallengePersistentActor extends PersistentActor {
 
 }
 
+case class AllTimeStats(n: Long, latency: Long)
+
 class ChallengeViewActor extends PersistentView {
 
   val persistenceId = "log-writer"
 
   val viewId = "log-view"
 
+  var allTimesStats: AllTimeStats = AllTimeStats(0,0)
+
   def receive = {
     case r @ FakeLatency(seconds) => {
-      println("VIEW MESSAGE RECEIVED: " + r)
+      val newN = allTimesStats.n + 1
+      allTimesStats = AllTimeStats(newN, (allTimesStats.latency + seconds) / newN)
+      println(allTimesStats)
+    }
+
+    case "stats" => {
+      context.sender ! allTimesStats
     }
   }
 

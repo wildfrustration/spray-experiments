@@ -1,15 +1,17 @@
 package WebInterface
 
 import akka.actor.Actor
+import akka.util.Timeout
 import spray.routing._
 import spray.http._
 import MediaTypes._
+import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import spray.json.DefaultJsonProtocol
 import spray.httpx.SprayJsonSupport.sprayJsonMarshaller
 import spray.httpx.SprayJsonSupport.sprayJsonUnmarshaller
 
-case class FakeLatency(seconds: Int)
+case class FakeLatency(seconds: Long)
 
 object JsonImplicits extends DefaultJsonProtocol {
   implicit val FakeLatencyFormat = jsonFormat1(FakeLatency)
@@ -32,6 +34,8 @@ class FakeBenchmarkingActor extends Actor with FakeBenchmarking {
 
 // this trait defines our service behavior independently from the service actor
 trait FakeBenchmarking extends HttpService {
+
+  implicit val timeout = Timeout(5.seconds)
 
   import JsonImplicits._
 
@@ -60,7 +64,14 @@ trait FakeBenchmarking extends HttpService {
     path("") {
       get {
         complete {
-          "OK Boss"
+          akka.pattern.ask(Logger.logging, "stats").map {
+            case (n, latency) => {
+              s"hits: $n, average: $latency"
+            }
+            case _ => {
+              ""
+            }
+          }
         }
       }
     }
