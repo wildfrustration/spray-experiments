@@ -15,7 +15,7 @@ object Logger {
 class LoggingActor extends Actor {
 
   // create the remote actor
-  val persistence = context.actorSelection("akka.tcp://persistence-system@127.0.0.1:2552/persistence-actor")
+  val persistence = context.actorSelection("akka.tcp://persistence-system@192.168.1.103:2552/user/persistence-actor")
   var counter = 0
 
   def receive = {
