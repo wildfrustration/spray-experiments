@@ -17,8 +17,7 @@ object Logger {
 
   val logging = system.actorOf(Props[LoggingActor], name = "Logging-Actor")  // the local actor
 
-  //this is not cluster safe
-  def inMemory(ms: Long): Unit = { logging ! FakeLatency(ms); Unit}
+  def write(ms: Long): Unit = { logging ! FakeLatency(ms); Unit}
 
 }
 
