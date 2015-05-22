@@ -30,7 +30,7 @@ class ChallengePersistentActor extends PersistentActor {
       persist(r)( _ => Unit)
     }
 
-    case _ => { println("dafuk"); Unit }
+    case _ => Unit
 
   }
 

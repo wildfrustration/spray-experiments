@@ -44,7 +44,7 @@ trait FakeBenchmarking extends HttpService {
 
   /*
     test non-blocking
-    http post http://localhost:8080 seconds:=5 & http post http://localhost:8080 seconds:=1 & http post http://localhost:8080 seconds:=3
+    http post http://localhost:8080 ms:=5000 & http post http://localhost:8080 ms:=1000 & http post http://localhost:8080 ms:=3000
   */
 
   val myRoute =
