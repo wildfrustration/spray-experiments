@@ -42,7 +42,9 @@ class LoggingActor extends Actor {
     }
 
     case r @ "stats" => {
-      sender() ! Await.result((view ? r).mapTo[AllTimeStats], timeout.duration)
+      (view ? r).mapTo[AllTimeStats].map( stats =>
+        sender() ! stats
+      )
     }
 
     case _ => Unit
