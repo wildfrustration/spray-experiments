@@ -6,7 +6,7 @@ import akka.util.Timeout
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import akka.pattern.ask
+import akka.pattern.{ask, pipe}
 import com.typesafe.config._
 
 object Logger {
@@ -42,9 +42,7 @@ class LoggingActor extends Actor {
     }
 
     case r @ "stats" => {
-      (view ? r).mapTo[AllTimeStats].map( stats =>
-        sender() ! stats
-      )
+      (view ? r).mapTo[AllTimeStats] pipeTo sender
     }
 
     case _ => Unit
