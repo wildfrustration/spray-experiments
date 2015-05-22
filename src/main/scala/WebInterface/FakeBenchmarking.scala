@@ -3,6 +3,7 @@ package WebInterface
 import Persistence.AllTimeStats
 import akka.actor.Actor
 import akka.util.Timeout
+import akka.pattern._
 import spray.routing._
 import spray.http._
 import MediaTypes._
@@ -67,11 +68,7 @@ trait FakeBenchmarking extends HttpService {
       get {
         respondWithMediaType(MediaTypes.`application/json`){
           complete {
-            akka.pattern.ask(Logger.logging, "stats").map {
-              case s @ AllTimeStats(n, latency) => {
-                s
-              }
-            }
+            (Logger.logging ? "stats").mapTo[AllTimeStats]
           }
         }
       }
